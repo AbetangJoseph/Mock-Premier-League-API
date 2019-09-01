@@ -2,9 +2,7 @@ import { Router } from 'express';
 
 const router = Router();
 
-/* GET home page. */
-router.get('/', function(_req, res) {
-  res.status(200).json({ message: 'All is well, home for index' });
-});
+/** GET /health-check - Check service health */
+router.get('/health-check', (_req, res) => res.send('OK'));
 
 export default router;
