@@ -1,4 +1,4 @@
-import { signup } from '../../src/controllers/user';
+import { signup, login } from '../../src/controllers/user';
 import { DBdisconnect, DBconnect } from '../../testConfig/db';
 
 describe('TESTS FOR USER CONTROLLER', () => {
@@ -28,6 +28,31 @@ describe('TESTS FOR USER CONTROLLER', () => {
         const result = await signup(user);
         expect(result).toThrowError('user already exists');
       } catch (error) {}
+    });
+  });
+
+  describe('Login Controller', () => {
+    const userWithRightCredentials = {
+      email: 'joeabetang@gmail.com',
+      password: 'pass1234',
+    };
+
+    const userWithWrongCredentials = {
+      email: 'joeabetang@gmail.com',
+      password: 'pass123',
+    };
+
+    it('returns a jwt token if login is successful', async () => {
+      const result = await login(userWithRightCredentials);
+      expect(result).toHaveProperty('token');
+    });
+
+    it('throws error if either password or email is incorrect', async () => {
+      try {
+        await login(userWithWrongCredentials);
+      } catch (err) {
+        expect(err).toEqual(new Error('Invalid email or password'));
+      }
     });
   });
 });
