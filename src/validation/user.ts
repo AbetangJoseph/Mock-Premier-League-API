@@ -20,3 +20,20 @@ export const validateSignup = (requestBody: any) => {
 
   return { error, value };
 };
+
+export const validateLogin = (input: any) => {
+  const userSchema = {
+    email: Joi.string()
+      .email()
+      .required(),
+    password: Joi.string()
+      .min(5)
+      .max(25)
+      .required(),
+  };
+
+  const { error, value } = Joi.validate(input, userSchema, {
+    abortEarly: false,
+  });
+  return { error, value };
+};
