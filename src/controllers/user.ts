@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { UserModel } from '../models/user';
+import { comparePassword } from '../services/comparePassword';
 
 const signup = async (newUser: any) => {
   const user = new UserModel(newUser);
@@ -12,4 +13,20 @@ const signup = async (newUser: any) => {
   throw new Error('user already exists');
 };
 
-export { signup };
+const login = async (incomingUser: any) => {
+  const existingUser = await UserModel.findOne({ email: incomingUser.email });
+  if (!existingUser) {
+    throw new Error('Invalid email or password');
+  }
+
+  const validPassword = await comparePassword(incomingUser, existingUser);
+
+  if (!validPassword) {
+    throw new Error('Invalid email or password');
+  }
+
+  const token = existingUser.generateAuthToken();
+  return { token };
+};
+
+export { signup, login };
