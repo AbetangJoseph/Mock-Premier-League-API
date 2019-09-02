@@ -1,5 +1,5 @@
-import { prop, Typegoose } from 'typegoose';
-// import * as mongoose from 'mongoose';
+import { prop, Typegoose, instanceMethod, InstanceType } from 'typegoose';
+import jwt from 'jsonwebtoken';
 
 class Users extends Typegoose {
   @prop({ required: true, trim: true })
@@ -13,7 +13,18 @@ class Users extends Typegoose {
 
   @prop({ default: false })
   isAdmin!: boolean;
+
+  @instanceMethod
+  public generateAuthToken(this: InstanceType<Users>) {
+    const token = jwt.sign(
+      { isAdmin: this.isAdmin, username: this.username, _id: this.id },
+      `${process.env.JWT_SECRET}`,
+      { expiresIn: '1d', issuer: 'STERLING' },
+    );
+    return token;
+  }
 }
+
 const UserModel = new Users().getModelForClass(Users);
 
 export { UserModel };
