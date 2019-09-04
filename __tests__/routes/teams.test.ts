@@ -6,7 +6,7 @@ import { signup } from '../../src/controllers/user';
 describe('TESTS FOR TEAMS ROUTE', () => {
   let adminToken: string;
   let userToken: string;
-  let userId: string;
+  let teamId: string;
 
   beforeAll(async () => {
     await DBconnect();
@@ -129,7 +129,7 @@ describe('TESTS FOR TEAMS ROUTE', () => {
         .set('Accept', 'application/json')
         .set('authorization', `Bearer ${adminToken}`)
         .then(res => {
-          userId = res.body.data._id;
+          teamId = res.body.data._id;
           expect(res.status).toBe(200);
           expect(res.body.data).toMatchObject({
             _id: expect.any(String),
@@ -158,22 +158,69 @@ describe('TESTS FOR TEAMS ROUTE', () => {
     });
   });
 
-  describe('Remove Team Route', () => {
-    it('deletes a team and returns an appropraite status code and deleted team id', async () => {
+  describe('Edit Team Route', () => {
+    it('updates/edit team and returns an appropraite status code and the updated document', async () => {
       await request(app)
-        .delete(`/api/v1/teams/${userId}`)
+        .put(`/api/v1/teams/${teamId}`)
+        .send({ clubCodeName: 'PSG', clubName: 'Paris Saint Germain' })
         .set('Accept', 'application/json')
         .set('authorization', `Bearer ${adminToken}`)
         .then(res => {
           expect(res.status).toBe(200);
           expect(res.body.success).toBeTruthy();
-          expect(res.body.data.id).toMatch(`${userId}`);
+          expect(res.body.data).toEqual(
+            expect.objectContaining({
+              clubCodeName: 'PSG',
+              clubName: 'Paris Saint Germain',
+            }),
+          );
+        });
+    });
+
+    it('throws error with an appropraite status code if update/edit input value(s) violates validation constraints', async () => {
+      await request(app)
+        .put(`/api/v1/teams/${teamId}`)
+        .send({ clubCodeName: 'PSG4', clubName: 'Paris Saint Germain' })
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body.error).toBeTruthy();
+          expect(res.body.error).toMatch(
+            'clubCodeName length must be 3 characters long',
+          );
+        });
+    });
+
+    it('throws error with an appropraite status code when trying to update/edit a deleted team', async () => {
+      await request(app)
+        .put('/api/v1/teams/5d6eb3bc764892764a0bd5ae')
+        .send({ clubCodeName: 'PSG', clubName: 'Paris Saint Germain' })
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body.error).toBeTruthy();
+        });
+    });
+  });
+
+  describe('Remove Team Route', () => {
+    it('deletes a team and returns an appropraite status code and deleted team id', async () => {
+      await request(app)
+        .delete(`/api/v1/teams/${teamId}`)
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body.success).toBeTruthy();
+          expect(res.body.data.id).toMatch(`${teamId}`);
         });
     });
 
     it('throws error with an appropraite status code when trying to delete an already deleted team', async () => {
       await request(app)
-        .delete(`/api/v1/teams/${userId}`)
+        .delete(`/api/v1/teams/${teamId}`)
         .set('Accept', 'application/json')
         .set('authorization', `Bearer ${adminToken}`)
         .then(res => {
