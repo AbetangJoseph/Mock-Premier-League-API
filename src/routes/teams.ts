@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import { validateTeam } from '../validation/teams';
-import { add } from '../controllers/teams';
+import { add, remove } from '../controllers/teams';
 import auth from '../middleware/auth';
 import authAdmin from '../middleware/auth.admin';
 
@@ -39,5 +39,17 @@ router.route('/').post(async (req: express.Request, res: express.Response) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+router
+  .route('/:id')
+  .delete(async (req: express.Request, res: express.Response) => {
+    const teamId = req.params.id;
+    try {
+      const response = await remove(teamId);
+      res.status(200).json({ success: true, data: { id: response } });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
 
 export default router;
