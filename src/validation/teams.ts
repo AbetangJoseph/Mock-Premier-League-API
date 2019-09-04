@@ -26,3 +26,27 @@ export const validateTeam = (requestBody: any) => {
 
   return { error, value };
 };
+
+export const validateTeamUpdate = (requestBody: any) => {
+  const teamSchema = {
+    clubName: Joi.string().trim(),
+    clubCodeName: Joi.string()
+      .length(3)
+      .uppercase()
+      .trim(),
+    founded: Joi.number()
+      .integer()
+      .max(9999),
+    coach: Joi.string().trim(),
+    logo: Joi.string(),
+    country: Joi.string().trim(),
+    stadium: Joi.string().trim(),
+    stadiumCapacity: Joi.number().integer(),
+  };
+
+  const { error, value } = Joi.validate(requestBody, teamSchema, {
+    abortEarly: false,
+  });
+
+  return { error, value };
+};
