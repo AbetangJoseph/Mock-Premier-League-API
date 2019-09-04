@@ -24,6 +24,9 @@ class Teams extends Typegoose {
 
   @prop({ required: true })
   stadiumCapacity!: number;
+
+  @prop({ default: false })
+  isDeleted?: boolean;
 }
 
 const TeamModel = new Teams().getModelForClass(Teams);
