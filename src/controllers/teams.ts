@@ -21,4 +21,22 @@ const remove = async (teamId: string) => {
   const res = await team.save();
   return res.id;
 };
-export { add, remove };
+
+const edit = async (teamId: string, payload: any) => {
+  let team = await TeamModel.findOne({ _id: teamId });
+  if (!team || team.isDeleted) {
+    throw new Error('no such team');
+  }
+
+  team.clubName = payload.clubName || team.clubName;
+  team.clubCodeName = payload.clubCodeName || team.clubCodeName;
+  team.founded = payload.founded || team.founded;
+  team.coach = payload.coach || team.coach;
+  team.country = payload.country || team.country;
+  team.stadium = payload.stadium || team.stadium;
+  team.stadiumCapacity = payload.stadiumCapacity || team.stadiumCapacity;
+
+  return team.save();
+};
+
+export { add, remove, edit };
