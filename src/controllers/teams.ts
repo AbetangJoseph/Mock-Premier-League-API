@@ -11,4 +11,14 @@ const add = async (newTeam: any) => {
   throw new Error('team already exists');
 };
 
-export { add };
+const remove = async (teamId: string) => {
+  const team = await TeamModel.findOne({ _id: teamId });
+  if (!team || team.isDeleted) {
+    throw new Error('no such team');
+  }
+  team.isDeleted = true;
+
+  const res = await team.save();
+  return res.id;
+};
+export { add, remove };
