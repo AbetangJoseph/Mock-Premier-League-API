@@ -3,9 +3,10 @@ import { DBdisconnect, DBconnect } from '../../testConfig/db';
 import app from '../../src/app';
 import { signup } from '../../src/controllers/user';
 
-describe('TESTS FOR TEAMS CONTROLLER', () => {
+describe('TESTS FOR TEAMS ROUTE', () => {
   let adminToken: string;
   let userToken: string;
+  let userId: string;
 
   beforeAll(async () => {
     await DBconnect();
@@ -41,7 +42,7 @@ describe('TESTS FOR TEAMS CONTROLLER', () => {
     await DBdisconnect();
   });
 
-  describe('Add Team Controller', () => {
+  describe('Add Team Route', () => {
     const inCompleteTeamInfo = {
       clubName: '',
       clubCodeName: 'fcb',
@@ -128,6 +129,7 @@ describe('TESTS FOR TEAMS CONTROLLER', () => {
         .set('Accept', 'application/json')
         .set('authorization', `Bearer ${adminToken}`)
         .then(res => {
+          userId = res.body.data._id;
           expect(res.status).toBe(200);
           expect(res.body.data).toMatchObject({
             _id: expect.any(String),
@@ -152,6 +154,31 @@ describe('TESTS FOR TEAMS CONTROLLER', () => {
         .then(res => {
           expect(res.status).toBe(400);
           expect(res.body.error).toMatch('team already exists');
+        });
+    });
+  });
+
+  describe('Remove Team Route', () => {
+    it('deletes a team and returns an appropraite status code and deleted team id', async () => {
+      await request(app)
+        .delete(`/api/v1/teams/${userId}`)
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body.success).toBeTruthy();
+          expect(res.body.data.id).toMatch(`${userId}`);
+        });
+    });
+
+    it('throws error with an appropraite status code when trying to delete an already deleted team', async () => {
+      await request(app)
+        .delete(`/api/v1/teams/${userId}`)
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body.error).toMatch('no such team');
         });
     });
   });
