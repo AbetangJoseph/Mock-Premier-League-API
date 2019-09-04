@@ -1,8 +1,8 @@
-import { add, remove } from '../../src/controllers/teams';
+import { add, remove, edit } from '../../src/controllers/teams';
 import { DBdisconnect, DBconnect } from '../../testConfig/db';
 
 describe('TESTS FOR TEAMS CONTROLLER', () => {
-  let userId: string;
+  let teamId: string;
 
   beforeAll(async () => {
     await DBconnect();
@@ -14,18 +14,18 @@ describe('TESTS FOR TEAMS CONTROLLER', () => {
 
   describe('Add Team Controller', () => {
     const team = {
-      clubName: 'FC Barcelona',
+      clubName: 'Real Madrid',
       clubCodeName: 'fcb',
       founded: 1899,
       coach: 'Ernesto Valverde',
-      country: true,
+      country: 'Brazil',
       stadium: 'Camp Nou',
       stadiumCapacity: 99354,
     };
 
     it('checks that team was created and has clubName & id properties', async () => {
       await add(team).then(res => {
-        userId = res._id;
+        teamId = res._id;
         expect(res).toHaveProperty('_id');
         expect(res).toHaveProperty('clubName');
       });
@@ -40,8 +40,30 @@ describe('TESTS FOR TEAMS CONTROLLER', () => {
     });
   });
 
+  describe('Edit Team Controller', () => {
+    it('updates team and return the updated document', async () => {
+      await edit(teamId, { clubName: 'FC Barcelona', country: 'Spain' }).then(
+        res => {
+          expect(res.country).toMatch('Spain');
+          expect(res.clubName).toMatch('FC Barcelona');
+        },
+      );
+    });
+
+    it('throws error if team to update is not found or has aleady been deleted', async () => {
+      try {
+        await edit('5d6eb3bc764892764a0bd5ae', {
+          clubName: 'FC Barcelona',
+          country: 'Spain',
+        });
+      } catch (error) {
+        expect(error).toEqual(new Error('no such team'));
+      }
+    });
+  });
+
   describe('Remove Team Controller', () => {
-    it('throws error if team is no found or has already been deleted', async () => {
+    it('throws error if team is not found or has already been deleted', async () => {
       try {
         await remove('5d6eb3bc764892764a0bd5ae');
       } catch (error) {
@@ -50,8 +72,8 @@ describe('TESTS FOR TEAMS CONTROLLER', () => {
     });
 
     it('removes team', async () => {
-      await remove(userId).then(res => {
-        expect(res).toBe(`${userId}`);
+      await remove(teamId).then(res => {
+        expect(res).toBe(`${teamId}`);
       });
     });
   });
