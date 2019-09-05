@@ -39,4 +39,8 @@ const edit = async (teamId: string, payload: any) => {
   return team.save();
 };
 
-export { add, remove, edit };
+const viewAll = async () => {
+  return TeamModel.find({ isDeleted: false });
+};
+
+export { add, remove, edit, viewAll };
