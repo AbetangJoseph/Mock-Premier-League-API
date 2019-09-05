@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import { validateTeam, validateTeamUpdate } from '../validation/teams';
-import { add, remove, edit } from '../controllers/teams';
+import { add, remove, edit, viewAll } from '../controllers/teams';
 import auth from '../middleware/auth';
 import authAdmin from '../middleware/auth.admin';
 
@@ -9,6 +9,11 @@ import _ from 'lodash';
 const router = Router();
 
 router.use(auth);
+router.route('/').get(async (_req: express.Request, res: express.Response) => {
+  const response = await viewAll();
+  res.status(200).json({ success: true, data: response });
+});
+
 router.use(authAdmin);
 router.route('/').post(async (req: express.Request, res: express.Response) => {
   const body = req.body;
