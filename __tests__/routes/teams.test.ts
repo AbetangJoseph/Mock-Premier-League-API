@@ -205,6 +205,26 @@ describe('TESTS FOR TEAMS ROUTE', () => {
     });
   });
 
+  describe('View All Teams Route', () => {
+    it('deletes a team and returns an appropraite status code and deleted team id', async () => {
+      await request(app)
+        .get(`/api/v1/teams/`)
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body.success).toBeTruthy();
+          expect(res.body.data).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                clubCodeName: 'PSG',
+              }),
+            ]),
+          );
+        });
+    });
+  });
+
   describe('Remove Team Route', () => {
     it('deletes a team and returns an appropraite status code and deleted team id', async () => {
       await request(app)
