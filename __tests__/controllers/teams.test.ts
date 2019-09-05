@@ -1,4 +1,4 @@
-import { add, remove, edit } from '../../src/controllers/teams';
+import { add, remove, edit, viewAll } from '../../src/controllers/teams';
 import { DBdisconnect, DBconnect } from '../../testConfig/db';
 
 describe('TESTS FOR TEAMS CONTROLLER', () => {
@@ -59,6 +59,26 @@ describe('TESTS FOR TEAMS CONTROLLER', () => {
       } catch (error) {
         expect(error).toEqual(new Error('no such team'));
       }
+    });
+  });
+
+  describe('View All Team Controller', () => {
+    it('view all teams', async () => {
+      await viewAll().then(res => {
+        expect(res).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              clubName: 'FC Barcelona',
+              clubCodeName: 'fcb',
+              founded: 1899,
+              coach: 'Ernesto Valverde',
+              country: 'Spain',
+              stadium: 'Camp Nou',
+              stadiumCapacity: 99354,
+            }),
+          ]),
+        );
+      });
     });
   });
 
