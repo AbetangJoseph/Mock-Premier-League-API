@@ -4,7 +4,7 @@ import shortid from 'shortid';
 
 const productionBaseURL = 'yoursite';
 const productionPort = 'yourport';
-const productionProtocol = 'http/https';
+const productionProtocol = 'https';
 const url =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000/api/v1/fixtures'
