@@ -124,10 +124,53 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
         });
     });
 
+    describe('Edit Fixture Route', () => {
+      it('updates/edit fixture and returns an appropraite status code and the updated document', async () => {
+        await request(app)
+          .put(`/api/v1/fixtures/${fixtureId}`)
+          .send({ venue: 'Wembly', date: '2019-05-19T00:00:00+00:00' })
+          .set('Accept', 'application/json')
+          .set('authorization', `Bearer ${adminToken}`)
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBeTruthy();
+            expect(res.body.data).toEqual(
+              expect.objectContaining({
+                venue: 'Wembly',
+                date: '2019-05-19T00:00:00+00:00',
+              }),
+            );
+          });
+      });
+
+      it('throws error with an appropraite status code if update/edit input value(s) violates validation constraints', async () => {
+        await request(app)
+          .put(`/api/v1/fixtures/${fixtureId}`)
+          .send({ venue: 33, date: '2019-05-19T00:00:00+00:00' })
+          .set('Accept', 'application/json')
+          .set('authorization', `Bearer ${adminToken}`)
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body.error).toBeTruthy();
+            expect(res.body.error).toMatch('venue must be a string');
+          });
+      });
+
+      it('throws error with an appropraite status code when trying to update/edit a deleted fixture', async () => {
+        await request(app)
+          .put('/api/v1/fixtures/5d6eb3bc764892764a0bd5ae')
+          .send({ venue: 'Wembly', date: '2019-05-19T00:00:00+00:00' })
+          .set('Accept', 'application/json')
+          .set('authorization', `Bearer ${adminToken}`)
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body.error).toBeTruthy();
+          });
+      });
+    });
+
     describe('Remove Fixture Route', () => {
       it('deletes a fixture and returns an appropraite status code and deleted fixture id', async () => {
-        console.log('gcgcgcgc', fixtureId);
-
         await request(app)
           .delete(`/api/v1/fixtures/${fixtureId}`)
           .set('Accept', 'application/json')
