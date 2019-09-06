@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { add, remove, edit } from '../controllers/fixtures';
+import { add, remove, edit, viewAll } from '../controllers/fixtures';
 import { validateFixture, validateFixtureUpdate } from '../validation/fixtures';
 import auth from '../middleware/auth';
 import authAdmin from '../middleware/auth.admin';
@@ -9,27 +9,33 @@ const router = Router();
 
 router.use(auth);
 router.use(authAdmin);
-router.route('/').post(async (req: express.Request, res: express.Response) => {
-  const body = req.body;
+router
+  .route('/')
+  .post(async (req: express.Request, res: express.Response) => {
+    const body = req.body;
 
-  const { error, value: request } = validateFixture(
-    _.pick(body, ['home', 'away', 'venue', 'time', 'date']),
-  );
+    const { error, value: request } = validateFixture(
+      _.pick(body, ['home', 'away', 'venue', 'time', 'date']),
+    );
 
-  if (error) {
-    res
-      .status(400)
-      .json({ error: error.details[0].message.replace(/\"/g, '') });
-    return;
-  }
+    if (error) {
+      res
+        .status(400)
+        .json({ error: error.details[0].message.replace(/\"/g, '') });
+      return;
+    }
 
-  try {
-    const response = await add(request);
+    try {
+      const response = await add(request);
+      res.status(200).json({ success: true, data: response });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  })
+  .get(async (_req: express.Request, res: express.Response) => {
+    const response = await viewAll();
     res.status(200).json({ success: true, data: response });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+  });
 
 router
   .route('/:id')
