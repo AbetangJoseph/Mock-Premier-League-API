@@ -5,6 +5,7 @@ import {
   edit,
   viewAll,
   viewCompleted,
+  viewPending,
 } from '../controllers/fixtures';
 import { validateFixture, validateFixtureUpdate } from '../validation/fixtures';
 import auth from '../middleware/auth';
@@ -15,12 +16,17 @@ const router = Router();
 
 router.use(auth);
 router.get(
-  '/completed',
+  '/complete',
   async (_req: express.Request, res: express.Response) => {
     const response = await viewCompleted();
     res.status(200).json({ success: true, data: response });
   },
 );
+
+router.get('/pending', async (_req: express.Request, res: express.Response) => {
+  const response = await viewPending();
+  res.status(200).json({ success: true, data: response });
+});
 
 router.use(authAdmin);
 router
