@@ -54,4 +54,8 @@ const edit = async (fixtureId: string, payload: any) => {
   return fixture.save();
 };
 
-export { add, remove, edit };
+const viewAll = async () => {
+  return FixtureModel.find({ isDeleted: false });
+};
+
+export { add, remove, edit, viewAll };
