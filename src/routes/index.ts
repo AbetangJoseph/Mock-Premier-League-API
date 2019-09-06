@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import userRouter from './user';
 import teamRouter from './teams';
+import fixtureRouter from './fixtures';
 
 const router = Router();
 
@@ -12,5 +13,8 @@ router.use('/user', userRouter);
 
 // mount team route
 router.use('/teams', teamRouter);
+
+// mount fixtures route
+router.use('/fixtures', fixtureRouter);
 
 export default router;
