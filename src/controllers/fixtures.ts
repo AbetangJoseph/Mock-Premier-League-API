@@ -20,4 +20,15 @@ const add = async (newFixture: any) => {
   throw new Error('fixture already exists');
 };
 
-export { add };
+const remove = async (teamId: string) => {
+  const fixture = await FixtureModel.findOne({ _id: teamId });
+  if (!fixture || fixture.isDeleted) {
+    throw new Error('no such fixture');
+  }
+  fixture.isDeleted = true;
+
+  const res = await fixture.save();
+  return res.id;
+};
+
+export { add, remove };
