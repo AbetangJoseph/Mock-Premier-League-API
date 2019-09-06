@@ -1,5 +1,5 @@
 import { add as addTeam } from '../../src/controllers/teams';
-import { add, remove } from '../../src/controllers/fixtures';
+import { add, remove, edit } from '../../src/controllers/fixtures';
 import { DBdisconnect, DBconnect } from '../../testConfig/db';
 
 describe('TESTS FOR FIXTURES CONTROLLER', () => {
@@ -87,6 +87,29 @@ describe('TESTS FOR FIXTURES CONTROLLER', () => {
         await add(fixture);
       } catch (error) {
         expect(error).toEqual(new Error('fixture already exists'));
+      }
+    });
+  });
+
+  describe('Edit Fixture Controller', () => {
+    it('updates fixture and return the updated document', async () => {
+      await edit(fixtureId, {
+        venue: 'Wembly',
+        date: '2019-05-19T00:00:00+00:00',
+      }).then(res => {
+        expect(res.venue).toMatch('Wembly');
+        expect(res.date).toMatch('2019-05-19T00:00:00+00:00');
+      });
+    });
+
+    it('throws error if fixture to update is not found or has aleady been deleted', async () => {
+      try {
+        await edit('5d6eb3bc764892764a0bd5ae', {
+          venue: 'Wembly',
+          date: '2019-05-19T00:00:00+00:00',
+        });
+      } catch (error) {
+        expect(error).toEqual(new Error('no such fixture'));
       }
     });
   });
