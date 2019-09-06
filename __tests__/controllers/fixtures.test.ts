@@ -1,5 +1,11 @@
 import { add as addTeam } from '../../src/controllers/teams';
-import { add, remove, edit, viewAll } from '../../src/controllers/fixtures';
+import {
+  add,
+  remove,
+  edit,
+  viewAll,
+  viewCompleted,
+} from '../../src/controllers/fixtures';
 import { DBdisconnect, DBconnect } from '../../testConfig/db';
 
 describe('TESTS FOR FIXTURES CONTROLLER', () => {
@@ -36,6 +42,15 @@ describe('TESTS FOR FIXTURES CONTROLLER', () => {
 
     await addTeam(away).then(res => {
       awayId = res._id;
+    });
+
+    await add({
+      home: `${homeId}`,
+      away: `${awayId}`,
+      venue: 'Allianz Field',
+      time: '1200GMT',
+      date: 'September 11 2019',
+      status: 'completed',
     });
   });
 
@@ -123,6 +138,24 @@ describe('TESTS FOR FIXTURES CONTROLLER', () => {
               goalsHomeTeam: 0,
               goalsAwayTeam: 0,
               status: 'pending',
+              elapsed: 0,
+              isDeleted: false,
+            }),
+          ]),
+        );
+      });
+    });
+  });
+
+  describe('View Completed Fixtures Controller', () => {
+    it('view all fixtures', async () => {
+      await viewCompleted().then(res => {
+        expect(res).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              goalsHomeTeam: 0,
+              goalsAwayTeam: 0,
+              status: 'completed',
               elapsed: 0,
               isDeleted: false,
             }),
