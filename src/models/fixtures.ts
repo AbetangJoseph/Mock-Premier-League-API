@@ -44,7 +44,7 @@ class Fixtures extends Typegoose {
   @prop({ required: true, trim: true })
   time!: string;
 
-  @prop({ trim: true, default: 'logo' })
+  @prop({ trim: true })
   date!: string;
 
   @prop({ required: true, default: 0 })
@@ -62,7 +62,7 @@ class Fixtures extends Typegoose {
   @prop({ required: true, default: 0 })
   elapsed!: number;
 
-  @prop({ default: `${url}/${shortid.generate()}` })
+  @prop({ default: () => `${url}/${shortid.generate()}` })
   link?: string;
 
   @prop({ default: false })
