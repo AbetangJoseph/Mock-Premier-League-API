@@ -1,10 +1,11 @@
 import { add as addTeam } from '../../src/controllers/teams';
-import { add } from '../../src/controllers/fixtures';
+import { add, remove } from '../../src/controllers/fixtures';
 import { DBdisconnect, DBconnect } from '../../testConfig/db';
 
 describe('TESTS FOR FIXTURES CONTROLLER', () => {
   let homeId: string;
   let awayId: string;
+  let fixtureId: string;
 
   beforeAll(async () => {
     await DBconnect();
@@ -52,6 +53,7 @@ describe('TESTS FOR FIXTURES CONTROLLER', () => {
         date: 'monday 12 2019',
       };
       await add(fixture).then(res => {
+        fixtureId = res!._id;
         expect(res).toHaveProperty('link');
         expect(res).toHaveProperty('home');
         expect(res).toHaveProperty('away');
@@ -86,6 +88,22 @@ describe('TESTS FOR FIXTURES CONTROLLER', () => {
       } catch (error) {
         expect(error).toEqual(new Error('fixture already exists'));
       }
+    });
+  });
+
+  describe('Remove Fixture Controller', () => {
+    it('throws error if fixture is not found or has already been deleted', async () => {
+      try {
+        await remove('5d6eb3bc764892764a0bd5ae');
+      } catch (error) {
+        expect(error).toEqual(new Error('no such fixture'));
+      }
+    });
+
+    it('removes team', async () => {
+      await remove(fixtureId).then(res => {
+        expect(res).toBe(`${fixtureId}`);
+      });
     });
   });
 });
