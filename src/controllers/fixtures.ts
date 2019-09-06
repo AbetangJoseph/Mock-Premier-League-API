@@ -62,4 +62,8 @@ const viewCompleted = async () => {
   return FixtureModel.find({ status: 'completed' });
 };
 
-export { add, remove, edit, viewAll, viewCompleted };
+const viewPending = async () => {
+  return FixtureModel.find({ status: 'pending' });
+};
+
+export { add, remove, edit, viewAll, viewCompleted, viewPending };
