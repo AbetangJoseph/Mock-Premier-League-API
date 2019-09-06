@@ -5,6 +5,7 @@ import {
   edit,
   viewAll,
   viewCompleted,
+  viewPending,
 } from '../../src/controllers/fixtures';
 import { DBdisconnect, DBconnect } from '../../testConfig/db';
 
@@ -148,7 +149,7 @@ describe('TESTS FOR FIXTURES CONTROLLER', () => {
   });
 
   describe('View Completed Fixtures Controller', () => {
-    it('view all fixtures', async () => {
+    it('view completed fixtures', async () => {
       await viewCompleted().then(res => {
         expect(res).toEqual(
           expect.arrayContaining([
@@ -156,6 +157,24 @@ describe('TESTS FOR FIXTURES CONTROLLER', () => {
               goalsHomeTeam: 0,
               goalsAwayTeam: 0,
               status: 'completed',
+              elapsed: 0,
+              isDeleted: false,
+            }),
+          ]),
+        );
+      });
+    });
+  });
+
+  describe('View Pending Fixtures Controller', () => {
+    it('view pending fixtures', async () => {
+      await viewPending().then(res => {
+        expect(res).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              goalsHomeTeam: 0,
+              goalsAwayTeam: 0,
+              status: 'pending',
               elapsed: 0,
               isDeleted: false,
             }),
