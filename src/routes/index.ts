@@ -1,10 +1,20 @@
 import { Router } from 'express';
+import userRouter from './user';
+import teamRouter from './teams';
+import fixtureRouter from './fixtures';
 
 const router = Router();
 
-/* GET home page. */
-router.get('/', function(_req, res) {
-  res.status(200).json({ message: 'All is well, home for index' });
-});
+/** GET /health-check - Check service health */
+router.get('/health-check', (_req, res) => res.send('OK'));
+
+// mount user route
+router.use('/users', userRouter);
+
+// mount team route
+router.use('/teams', teamRouter);
+
+// mount fixtures route
+router.use('/fixtures', fixtureRouter);
 
 export default router;

@@ -1,12 +1,46 @@
 #!/usr/bin/env node
 
 /**
+ * Read environment variables
+ */
+require('dotenv').config();
+
+/**
+ * Believe it or not, reading process.env is expensive in NODE.js
+ * https://github.com/nodejs/node/issues/3104
+ * We want to cache process.env to a regular object since we don't expect it to change at runtime anyway.
+ */
+process.env = JSON.parse(JSON.stringify(process.env));
+
+/**
  * Module dependencies.
  */
 
-var app = require('../dist/app').default;
-var debug = require('debug')('second-node:server');
-var http = require('http');
+const mongoose = require('mongoose');
+const http = require('http');
+const debug = require('debug')('second-node:server');
+const app = require('../dist/app').default;
+
+const URI =
+  process.env.NODE_ENV === 'development'
+    ? process.env.DEV_DB_URI
+    : process.env.PROD_DB_URI;
+
+/**
+ * connect to MongoDB
+ */
+
+mongoose
+  .connect(URI, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  })
+  .then(() => console.log(`connected to ${URI}`))
+  .catch(error => {
+    console.log(error.message);
+    process.exit(1);
+  });
 
 /**
  * Get port from environment and store in Express.
