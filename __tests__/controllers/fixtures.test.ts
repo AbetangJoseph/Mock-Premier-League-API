@@ -1,5 +1,5 @@
 import { add as addTeam } from '../../src/controllers/teams';
-import { add, remove, edit } from '../../src/controllers/fixtures';
+import { add, remove, edit, viewAll } from '../../src/controllers/fixtures';
 import { DBdisconnect, DBconnect } from '../../testConfig/db';
 
 describe('TESTS FOR FIXTURES CONTROLLER', () => {
@@ -111,6 +111,24 @@ describe('TESTS FOR FIXTURES CONTROLLER', () => {
       } catch (error) {
         expect(error).toEqual(new Error('no such fixture'));
       }
+    });
+  });
+
+  describe('View All Fixtures Controller', () => {
+    it('view all fixtures', async () => {
+      await viewAll().then(res => {
+        expect(res).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              goalsHomeTeam: 0,
+              goalsAwayTeam: 0,
+              status: 'pending',
+              elapsed: 0,
+              isDeleted: false,
+            }),
+          ]),
+        );
+      });
     });
   });
 
