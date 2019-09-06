@@ -21,14 +21,14 @@ describe('TESTS FOR USER ROUTE', () => {
 
     it('checks that user was created and returns the right status code', async () => {
       await request(app)
-        .post('/api/v1/user/signup')
+        .post('/api/v1/users/signup')
         .send(user)
         .set('Accept', 'application/json')
         .then(res => {
           expect(res.status).toBe(200);
           expect(res.body.data).toEqual(
             expect.objectContaining({
-              _id: expect.any(String),
+              id: expect.any(String),
               email: 'joeabetang@gmail.com',
               username: 'joe',
               isAdmin: true,
@@ -39,7 +39,7 @@ describe('TESTS FOR USER ROUTE', () => {
 
     it('checks that it throws error on attempt to signup using an existing email address', async () => {
       await request(app)
-        .post('/api/v1/user/signup')
+        .post('/api/v1/users/signup')
         .send(user)
         .set('Accept', 'application/json')
         .then(res => {
@@ -50,7 +50,7 @@ describe('TESTS FOR USER ROUTE', () => {
 
     it('validates and send an appropraite message if a field is missing', async () => {
       await request(app)
-        .post('/api/v1/user/signup')
+        .post('/api/v1/users/signup')
         .send({
           username: 'Sansa',
           email: 'sansa@gameofthrones.io',
@@ -82,7 +82,7 @@ describe('TESTS FOR USER ROUTE', () => {
 
     it('validates and send an appropraite status code and message if a field is missing', async () => {
       await request(app)
-        .post('/api/v1/user/login')
+        .post('/api/v1/users/login')
         .send(userWithAMissingCredential)
         .set('Accept', 'application/json')
         .then(res => {
@@ -93,7 +93,7 @@ describe('TESTS FOR USER ROUTE', () => {
 
     it('sends appropriate status code and throws error if credentials are invalid', async () => {
       await request(app)
-        .post('/api/v1/user/login')
+        .post('/api/v1/users/login')
         .send(userWithWrongCredentials)
         .set('Accept', 'application/json')
         .then(res => {
@@ -104,7 +104,7 @@ describe('TESTS FOR USER ROUTE', () => {
 
     it('returns "success":true and a jwt token if login is successful', async () => {
       await request(app)
-        .post('/api/v1/user/login')
+        .post('/api/v1/users/login')
         .send(userWithRightCredentials)
         .set('Accept', 'application/json')
         .then(res => {

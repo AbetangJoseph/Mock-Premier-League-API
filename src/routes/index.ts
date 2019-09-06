@@ -9,7 +9,7 @@ const router = Router();
 router.get('/health-check', (_req, res) => res.send('OK'));
 
 // mount user route
-router.use('/user', userRouter);
+router.use('/users', userRouter);
 
 // mount team route
 router.use('/teams', teamRouter);

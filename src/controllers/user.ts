@@ -4,7 +4,9 @@ import { comparePassword } from '../services/comparePassword';
 
 const signup = async (newUser: any) => {
   const user = new UserModel(newUser);
-  const foundUser = await UserModel.findOne({ email: user.email });
+  const foundUser = await UserModel.findOne({ email: user.email }).select(
+    'password',
+  );
   if (!foundUser) {
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);

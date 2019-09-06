@@ -19,7 +19,8 @@ router.route('/signup').post(async (req, res) => {
 
   try {
     const response = await signup(value);
-    res.status(200).json({ data: response });
+    const { username, email, id, isAdmin } = response;
+    res.status(200).json({ data: { username, email, id, isAdmin } });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

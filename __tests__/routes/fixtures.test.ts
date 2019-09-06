@@ -50,7 +50,7 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
     });
 
     await request(app)
-      .post('/api/v1/user/login')
+      .post('/api/v1/users/login')
       .send({ email: 'joeabetang@gmail.com', password: 'mysecret' })
       .set('authorization', `Bearer ${adminToken}`)
       .set('Accept', 'application/json')

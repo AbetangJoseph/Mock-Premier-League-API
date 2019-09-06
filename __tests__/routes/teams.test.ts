@@ -26,13 +26,13 @@ describe('TESTS FOR TEAMS ROUTE', () => {
     });
 
     await request(app)
-      .post('/api/v1/user/login')
+      .post('/api/v1/users/login')
       .send({ email: 'joeabetang@gmail.com', password: 'mysecret' })
       .set('Accept', 'application/json')
       .then(res => (adminToken = res.body.token));
 
     await request(app)
-      .post('/api/v1/user/login')
+      .post('/api/v1/users/login')
       .send({ email: 'anybody@gmail.com', password: 'yoursecret' })
       .set('Accept', 'application/json')
       .then(res => (userToken = res.body.token));
