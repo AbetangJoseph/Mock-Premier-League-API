@@ -25,3 +25,27 @@ export const validateFixture = (requestBody: any) => {
 
   return { error, value };
 };
+
+export const validateFixtureUpdate = (requestBody: any) => {
+  const fixtureSchema = {
+    date: Joi.string().trim(),
+    goalsHomeTeam: Joi.number(),
+    goalsAwayTeam: Joi.number(),
+    time: Joi.string().trim(),
+    status: Joi.string().trim(),
+    elapsed: Joi.number(),
+    home: Joi.string().trim(),
+    away: Joi.string().trim(),
+    venue: Joi.string().trim(),
+    halftime: Joi.string().trim(),
+    fulltime: Joi.string().trim(),
+    extratime: Joi.string().trim(),
+    penalty: Joi.string().trim(),
+  };
+
+  const { error, value } = Joi.validate(requestBody, fixtureSchema, {
+    abortEarly: false,
+  });
+
+  return { error, value };
+};
