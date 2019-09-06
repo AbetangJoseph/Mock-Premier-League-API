@@ -206,7 +206,7 @@ describe('TESTS FOR TEAMS ROUTE', () => {
   });
 
   describe('View All Teams Route', () => {
-    it('deletes a team and returns an appropraite status code and deleted team id', async () => {
+    it('returns all teams', async () => {
       await request(app)
         .get(`/api/v1/teams/`)
         .set('Accept', 'application/json')
