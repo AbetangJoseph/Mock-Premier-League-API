@@ -169,6 +169,30 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
       });
     });
 
+    describe('View All Fixtures Route', () => {
+      it('returns all fixtures', async () => {
+        await request(app)
+          .get(`/api/v1/fixtures/`)
+          .set('Accept', 'application/json')
+          .set('authorization', `Bearer ${adminToken}`)
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBeTruthy();
+            expect(res.body.data).toEqual(
+              expect.arrayContaining([
+                expect.objectContaining({
+                  goalsHomeTeam: 0,
+                  goalsAwayTeam: 0,
+                  status: 'pending',
+                  elapsed: 0,
+                  isDeleted: false,
+                }),
+              ]),
+            );
+          });
+      });
+    });
+
     describe('Remove Fixture Route', () => {
       it('deletes a fixture and returns an appropraite status code and deleted fixture id', async () => {
         await request(app)
