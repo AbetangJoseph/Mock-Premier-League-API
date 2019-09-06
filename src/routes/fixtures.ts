@@ -1,5 +1,11 @@
 import express, { Router } from 'express';
-import { add, remove, edit, viewAll } from '../controllers/fixtures';
+import {
+  add,
+  remove,
+  edit,
+  viewAll,
+  viewCompleted,
+} from '../controllers/fixtures';
 import { validateFixture, validateFixtureUpdate } from '../validation/fixtures';
 import auth from '../middleware/auth';
 import authAdmin from '../middleware/auth.admin';
@@ -8,6 +14,14 @@ import _ from 'lodash';
 const router = Router();
 
 router.use(auth);
+router.get(
+  '/completed',
+  async (_req: express.Request, res: express.Response) => {
+    const response = await viewCompleted();
+    res.status(200).json({ success: true, data: response });
+  },
+);
+
 router.use(authAdmin);
 router
   .route('/')
