@@ -42,6 +42,11 @@ describe('TESTS FOR USER CONTROLLER', () => {
       password: 'pass123',
     };
 
+    const userWithWrongCredentials2 = {
+      email: 'abetang@gmail.com',
+      password: 'pass123',
+    };
+
     it('returns a jwt token if login is successful', async () => {
       const result = await login(userWithRightCredentials);
       expect(result).toHaveProperty('token');
@@ -50,6 +55,14 @@ describe('TESTS FOR USER CONTROLLER', () => {
     it('throws error if either password or email is incorrect', async () => {
       try {
         await login(userWithWrongCredentials);
+      } catch (err) {
+        expect(err).toEqual(new Error('Invalid email or password'));
+      }
+    });
+
+    it('throws error if user doest not exist', async () => {
+      try {
+        await login(userWithWrongCredentials2);
       } catch (err) {
         expect(err).toEqual(new Error('Invalid email or password'));
       }
