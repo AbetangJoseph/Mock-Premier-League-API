@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
-import { add, remove } from '../controllers/fixtures';
-import { validateFixture } from '../validation/fixtures';
+import { add, remove, edit } from '../controllers/fixtures';
+import { validateFixture, validateFixtureUpdate } from '../validation/fixtures';
 import auth from '../middleware/auth';
 import authAdmin from '../middleware/auth.admin';
 import _ from 'lodash';
@@ -38,6 +38,24 @@ router
     try {
       const response = await remove(fixtureId);
       res.status(200).json({ success: true, data: { id: response } });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  })
+  .put(async (req: express.Request, res: express.Response) => {
+    const fixtureId = req.params.id;
+    const { error, value: request } = validateFixtureUpdate(req.body);
+
+    if (error) {
+      res
+        .status(400)
+        .json({ error: error.details[0].message.replace(/\"/g, '') });
+      return;
+    }
+
+    try {
+      const response = await edit(fixtureId, request);
+      res.status(200).json({ success: true, data: response });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
