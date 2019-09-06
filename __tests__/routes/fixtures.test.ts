@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { DBdisconnect, DBconnect } from '../../testConfig/db';
 import { add as addTeam } from '../../src/controllers/teams';
+import { add as addFixture } from '../../src/controllers/fixtures';
 import app from '../../src/app';
 import { signup } from '../../src/controllers/user';
 
@@ -54,6 +55,15 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
       .set('authorization', `Bearer ${adminToken}`)
       .set('Accept', 'application/json')
       .then(res => (adminToken = res.body.token));
+
+    await addFixture({
+      home: `${homeId}`,
+      away: `${awayId}`,
+      venue: 'Allianz Field',
+      time: '1200GMT',
+      date: 'September 11 2019',
+      status: 'completed',
+    });
   });
 
   afterAll(async () => {
@@ -165,6 +175,30 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
           .then(res => {
             expect(res.status).toBe(400);
             expect(res.body.error).toBeTruthy();
+          });
+      });
+    });
+
+    describe('View Completed Fixtures Route', () => {
+      it('view completed fixtures', async () => {
+        await request(app)
+          .get('/api/v1/fixtures/completed')
+          .set('Accept', 'application/json')
+          .set('authorization', `Bearer ${adminToken}`)
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBeTruthy();
+            expect(res.body.data).toEqual(
+              expect.arrayContaining([
+                expect.objectContaining({
+                  goalsHomeTeam: 0,
+                  goalsAwayTeam: 0,
+                  status: 'completed',
+                  elapsed: 0,
+                  isDeleted: false,
+                }),
+              ]),
+            );
           });
       });
     });
