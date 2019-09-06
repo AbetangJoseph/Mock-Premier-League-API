@@ -8,6 +8,7 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
   let homeId: string;
   let awayId: string;
   let adminToken: string;
+  let fixtureId: string;
 
   beforeAll(async () => {
     await DBconnect();
@@ -59,7 +60,7 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
     await DBdisconnect();
   });
 
-  describe('Add fixture Controller', () => {
+  describe('Add fixture Route', () => {
     it('should add fixture and return fixture added', async () => {
       const fixture = {
         home: `${homeId}`,
@@ -74,6 +75,7 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
         .set('Accept', 'application/json')
         .set('authorization', `Bearer ${adminToken}`)
         .then(res => {
+          fixtureId = res.body.data!._id;
           expect(res.status).toBe(200);
           expect(res.body.success).toBeTruthy();
           expect(res.body.data).toHaveProperty('link');
@@ -120,6 +122,33 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
           expect(res.body.error).toBeTruthy();
           expect(res.body.error).toEqual('team cannot play against itself');
         });
+    });
+
+    describe('Remove Fixture Route', () => {
+      it('deletes a fixture and returns an appropraite status code and deleted fixture id', async () => {
+        console.log('gcgcgcgc', fixtureId);
+
+        await request(app)
+          .delete(`/api/v1/fixtures/${fixtureId}`)
+          .set('Accept', 'application/json')
+          .set('authorization', `Bearer ${adminToken}`)
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBeTruthy();
+            expect(res.body.data.id).toMatch(`${fixtureId}`);
+          });
+      });
+
+      it('throws error with an appropraite status code when trying to delete an already deleted fixture', async () => {
+        await request(app)
+          .delete(`/api/v1/fixtures/${fixtureId}`)
+          .set('Accept', 'application/json')
+          .set('authorization', `Bearer ${adminToken}`)
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body.error).toMatch('no such fixture');
+          });
+      });
     });
   });
 });
