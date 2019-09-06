@@ -58,4 +58,8 @@ const viewAll = async () => {
   return FixtureModel.find({ isDeleted: false });
 };
 
-export { add, remove, edit, viewAll };
+const viewCompleted = async () => {
+  return FixtureModel.find({ status: 'completed' });
+};
+
+export { add, remove, edit, viewAll, viewCompleted };
