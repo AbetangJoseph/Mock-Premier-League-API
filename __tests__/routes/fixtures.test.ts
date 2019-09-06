@@ -182,7 +182,7 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
     describe('View Completed Fixtures Route', () => {
       it('view completed fixtures', async () => {
         await request(app)
-          .get('/api/v1/fixtures/completed')
+          .get('/api/v1/fixtures/complete')
           .set('Accept', 'application/json')
           .set('authorization', `Bearer ${adminToken}`)
           .then(res => {
@@ -194,6 +194,30 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
                   goalsHomeTeam: 0,
                   goalsAwayTeam: 0,
                   status: 'completed',
+                  elapsed: 0,
+                  isDeleted: false,
+                }),
+              ]),
+            );
+          });
+      });
+    });
+
+    describe('View Pending Fixtures Route', () => {
+      it('view pending fixtures', async () => {
+        await request(app)
+          .get('/api/v1/fixtures/pending')
+          .set('Accept', 'application/json')
+          .set('authorization', `Bearer ${adminToken}`)
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBeTruthy();
+            expect(res.body.data).toEqual(
+              expect.arrayContaining([
+                expect.objectContaining({
+                  goalsHomeTeam: 0,
+                  goalsAwayTeam: 0,
+                  status: 'pending',
                   elapsed: 0,
                   isDeleted: false,
                 }),
