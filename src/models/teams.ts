@@ -1,6 +1,6 @@
 import { prop, Typegoose } from 'typegoose';
 
-class Teams extends Typegoose {
+export class Teams extends Typegoose {
   @prop({ required: true, trim: true })
   clubName!: string;
 
