@@ -20,8 +20,8 @@ const add = async (newFixture: any) => {
   throw new Error('fixture already exists');
 };
 
-const remove = async (teamId: string) => {
-  const fixture = await FixtureModel.findOne({ _id: teamId });
+const remove = async (fixtureId: string) => {
+  const fixture = await FixtureModel.findOne({ _id: fixtureId });
   if (!fixture || fixture.isDeleted) {
     throw new Error('no such fixture');
   }
@@ -31,4 +31,27 @@ const remove = async (teamId: string) => {
   return res.id;
 };
 
-export { add, remove };
+const edit = async (fixtureId: string, payload: any) => {
+  let fixture = await FixtureModel.findOne({ _id: fixtureId });
+  if (!fixture || fixture.isDeleted) {
+    throw new Error('no such fixture');
+  }
+
+  fixture.date = payload.date || fixture.date;
+  fixture.goalsHomeTeam = payload.goalsHomeTeam || fixture.goalsHomeTeam;
+  fixture.goalsAwayTeam = payload.goalsAwayTeam || fixture.goalsAwayTeam;
+  fixture.status = payload.status || fixture.status;
+  fixture.elapsed = payload.elapsed || fixture.elapsed;
+  fixture.home = payload.home || fixture.home;
+  fixture.away = payload.away || fixture.away;
+  fixture.venue = payload.venue || fixture.venue;
+  fixture.time = payload.time || fixture.time;
+  fixture.scores!.halftime = payload.halftime || fixture.scores!.halftime;
+  fixture.scores!.fulltime = payload.fulltime || fixture.scores!.fulltime;
+  fixture.scores!.extratime = payload.extratime || fixture.scores!.extratime;
+  fixture.scores!.penalty = payload.penalty || fixture.scores!.penalty;
+
+  return fixture.save();
+};
+
+export { add, remove, edit };
