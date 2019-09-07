@@ -6,6 +6,7 @@ import {
   viewAll,
   viewCompleted,
   viewPending,
+  searchFixture,
 } from '../controllers/fixtures';
 import { validateFixture, validateFixtureUpdate } from '../validation/fixtures';
 import auth from '../middleware/auth';
@@ -13,6 +14,26 @@ import authAdmin from '../middleware/auth.admin';
 import _ from 'lodash';
 
 const router = Router();
+
+router.get('/search', async (req: express.Request, res: express.Response) => {
+  const query = req.query;
+
+  const { error, value: queryParams } = validateFixtureUpdate(query);
+
+  if (error) {
+    res
+      .status(400)
+      .json({ error: error.details[0].message.replace(/\"/g, '') });
+    return;
+  }
+
+  try {
+    const response = await searchFixture(queryParams);
+    res.status(200).json({ success: true, data: response });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 router.use(auth);
 router.get(
