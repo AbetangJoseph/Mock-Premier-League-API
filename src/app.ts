@@ -46,6 +46,13 @@ app.use(cookieParser());
 // mount all routes on /api path
 app.use('/api/v1', routes);
 
+app.get('/', (_req, res) =>
+  res.json({
+    health_check: 'OK',
+    message: 'append /api/v1/ to url to get started',
+  }),
+);
+
 // catch 404 and forward to error handler
 app.use(function(_req, _res, next) {
   next(createError(404));
