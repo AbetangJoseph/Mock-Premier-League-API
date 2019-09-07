@@ -2,6 +2,10 @@
 
 An API that serves the latest scores of fixtures of matches in a Mock Premier League
 
-#### api on heroku
+#### API on Heroku
 
 https://sterling-premierleague-api.herokuapp.com/
+
+#### API Documentation
+
+https://documenter.getpostman.com/view/8724465/SVmpWMDs
