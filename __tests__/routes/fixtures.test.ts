@@ -251,6 +251,48 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
       });
     });
 
+    describe('Search Fixtures Route', () => {
+      it('should search for a fixture by date and return fixtures that match without having to login', async () => {
+        await request(app)
+          .get('/api/v1/fixtures/search?date=20')
+          .set('Accept', 'application/json')
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBeTruthy();
+            expect(res.body.data[0]).toHaveProperty('link');
+            expect(res.body.data).toEqual(
+              expect.arrayContaining([
+                expect.objectContaining({
+                  isDeleted: false,
+                }),
+              ]),
+            );
+          });
+      });
+
+      it('should throw if no match found for the search', async () => {
+        await request(app)
+          .get('/api/v1/fixtures/search?time=hahah')
+          .set('Accept', 'application/json')
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body.error).toBeTruthy();
+            expect(res.body.error).toMatch('no match found');
+          });
+      });
+
+      it('should throw an error if search input violates validation constrians', async () => {
+        await request(app)
+          .get('/api/v1/fixtures/search?elapsed=hahah')
+          .set('Accept', 'application/json')
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body.error).toBeTruthy();
+            expect(res.body.error).toMatch('elapsed must be a number');
+          });
+      });
+    });
+
     describe('Remove Fixture Route', () => {
       it('deletes a fixture and returns an appropraite status code and deleted fixture id', async () => {
         await request(app)
