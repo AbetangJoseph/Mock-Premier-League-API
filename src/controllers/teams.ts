@@ -43,4 +43,26 @@ const viewAll = async () => {
   return TeamModel.find({ isDeleted: false });
 };
 
-export { add, remove, edit, viewAll };
+const searchTeam = async (searchParam: any) => {
+  const key = Object.keys(searchParam)[0];
+  const value = Object.values(searchParam)[0];
+
+  if (key === 'founded' || key === 'stadiumCapacity') {
+    throw new Error(
+      'please you cannot search by founded or stadiumCapacity yet',
+    );
+  }
+
+  const team = await TeamModel.find({
+    [key]: { $regex: new RegExp(`${value}`), $options: 'i' },
+    isDeleted: false,
+  });
+
+  if (!team.length) {
+    throw new Error('no match found');
+  }
+
+  return team;
+};
+
+export { add, remove, edit, viewAll, searchTeam };
