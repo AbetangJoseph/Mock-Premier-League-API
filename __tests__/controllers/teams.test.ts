@@ -1,4 +1,10 @@
-import { add, remove, edit, viewAll } from '../../src/controllers/teams';
+import {
+  add,
+  remove,
+  edit,
+  viewAll,
+  searchTeam,
+} from '../../src/controllers/teams';
 import { DBdisconnect, DBconnect } from '../../testConfig/db';
 
 describe('TESTS FOR TEAMS CONTROLLER', () => {
@@ -23,7 +29,18 @@ describe('TESTS FOR TEAMS CONTROLLER', () => {
       stadiumCapacity: 99354,
     };
 
+    const team2 = {
+      clubName: 'F.C. Paris Saint Germain',
+      clubCodeName: 'PSG',
+      founded: 1905,
+      coach: 'Ernesto Valverde',
+      country: 'France',
+      stadium: 'Stadium',
+      stadiumCapacity: 99354,
+    };
+
     it('checks that team was created and has clubName & id properties', async () => {
+      await add(team2);
       await add(team).then(res => {
         teamId = res._id;
         expect(res).toHaveProperty('_id');
@@ -79,6 +96,46 @@ describe('TESTS FOR TEAMS CONTROLLER', () => {
           ]),
         );
       });
+    });
+  });
+
+  describe('Search Team Controller', () => {
+    it('should search for a team by clubCodeName and return teams that match', async () => {
+      await searchTeam({ clubCodeName: 'B' }).then(res => {
+        expect(res).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              clubName: 'FC Barcelona',
+              clubCodeName: 'fcb',
+              founded: 1899,
+              coach: 'Ernesto Valverde',
+              country: 'Spain',
+              stadium: 'Camp Nou',
+              stadiumCapacity: 99354,
+            }),
+          ]),
+        );
+      });
+    });
+
+    it('should throw error if no match is found', async () => {
+      try {
+        await searchTeam({ clubCodeName: 'BS' });
+      } catch (error) {
+        expect(error).toEqual(new Error('no match found'));
+      }
+    });
+
+    it('should throw error if no match is found', async () => {
+      try {
+        await searchTeam({ founded: 1234 });
+      } catch (error) {
+        expect(error).toEqual(
+          new Error(
+            'please you cannot search by founded or stadiumCapacity yet',
+          ),
+        );
+      }
     });
   });
 

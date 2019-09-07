@@ -3,6 +3,8 @@ import { DBdisconnect, DBconnect } from '../../testConfig/db';
 import app from '../../src/app';
 import { signup } from '../../src/controllers/user';
 
+import { add as addTeam } from '../../src/controllers/teams';
+
 describe('TESTS FOR TEAMS ROUTE', () => {
   let adminToken: string;
   let userToken: string;
@@ -36,6 +38,16 @@ describe('TESTS FOR TEAMS ROUTE', () => {
       .send({ email: 'anybody@gmail.com', password: 'yoursecret' })
       .set('Accept', 'application/json')
       .then(res => (userToken = res.body.token));
+
+    await addTeam({
+      clubName: 'F.C. Paris Saint Germain',
+      clubCodeName: 'PSG',
+      founded: 1905,
+      coach: 'Ernesto Valverde',
+      country: 'France',
+      stadium: 'Stadium',
+      stadiumCapacity: 99354,
+    });
   });
 
   afterAll(async () => {
@@ -220,6 +232,49 @@ describe('TESTS FOR TEAMS ROUTE', () => {
                 clubCodeName: 'PSG',
               }),
             ]),
+          );
+        });
+    });
+  });
+
+  describe('Search Team Route', () => {
+    it('should search for a team by clubCodeName and return teams that match without having to login', async () => {
+      await request(app)
+        .get('/api/v1/teams/search?clubName=P')
+        .set('Accept', 'application/json')
+        .then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body.success).toBeTruthy();
+          expect(res.body.data).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                clubCodeName: 'PSG',
+              }),
+            ]),
+          );
+        });
+    });
+
+    it('should throw if no match foud for the search', async () => {
+      await request(app)
+        .get('/api/v1/teams/search?country=Nig')
+        .set('Accept', 'application/json')
+        .then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body.error).toBeTruthy();
+          expect(res.body.error).toMatch('no match found');
+        });
+    });
+
+    it('should throw an error if search input violates validation constrians', async () => {
+      await request(app)
+        .get('/api/v1/teams/search?clubCodeName=P')
+        .set('Accept', 'application/json')
+        .then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body.error).toBeTruthy();
+          expect(res.body.error).toMatch(
+            'clubCodeName length must be 3 characters long',
           );
         });
     });

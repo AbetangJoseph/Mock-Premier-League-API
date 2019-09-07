@@ -66,4 +66,35 @@ const viewPending = async () => {
   return FixtureModel.find({ status: 'pending' });
 };
 
-export { add, remove, edit, viewAll, viewCompleted, viewPending };
+const searchFixture = async (searchParam: any) => {
+  const key = Object.keys(searchParam)[0];
+  const value = Object.values(searchParam)[0];
+
+  if (key !== 'status' && key !== 'date' && key !== 'time' && key !== 'venue') {
+    throw new Error('you can only search by status, date or time');
+  }
+
+  const fixture = await FixtureModel.find({
+    [key]: { $regex: new RegExp(`${value}`), $options: 'i' },
+    isDeleted: false,
+  }).populate(
+    'home away',
+    ' -isDeleted -logo -founded -_id -coach -country -stadium -__v -stadiumCapacity',
+  );
+
+  if (!fixture.length) {
+    throw new Error('no match found');
+  }
+
+  return fixture;
+};
+
+export {
+  add,
+  remove,
+  edit,
+  viewAll,
+  viewCompleted,
+  viewPending,
+  searchFixture,
+};
