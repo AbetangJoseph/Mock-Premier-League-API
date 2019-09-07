@@ -6,7 +6,14 @@ import fixtureRouter from './fixtures';
 const router = Router();
 
 /** GET /health-check - Check service health */
-router.get('/health-check', (_req, res) => res.send('OK'));
+router.get('/', (_req, res) =>
+  res.json({
+    status: 'Ok',
+    usersOp: '/users/login, /users/signup',
+    fixtures: '/fixtures',
+    teams: '/teams, /teams:id',
+  }),
+);
 
 // mount user route
 router.use('/users', userRouter);
