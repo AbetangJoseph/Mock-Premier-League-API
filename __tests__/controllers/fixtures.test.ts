@@ -6,6 +6,7 @@ import {
   viewAll,
   viewCompleted,
   viewPending,
+  searchFixture,
 } from '../../src/controllers/fixtures';
 import { DBdisconnect, DBconnect } from '../../testConfig/db';
 
@@ -181,6 +182,52 @@ describe('TESTS FOR FIXTURES CONTROLLER', () => {
           ]),
         );
       });
+    });
+  });
+
+  describe('Search Fixture Controller', () => {
+    it('should search for a fixture by date and return fixtures that match', async () => {
+      await searchFixture({ date: '20' }).then(res => {
+        expect(res[0]).toHaveProperty('link');
+        expect(res).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              isDeleted: false,
+            }),
+          ]),
+        );
+      });
+    });
+
+    it('should search for a fixture by date and return fixtures that match', async () => {
+      await searchFixture({ date: '20' }).then(res => {
+        expect(res[0]).toHaveProperty('link');
+        expect(res).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              isDeleted: false,
+            }),
+          ]),
+        );
+      });
+    });
+
+    it('should throw error if no match is found', async () => {
+      try {
+        await searchFixture({ date: 'hahaha' });
+      } catch (error) {
+        expect(error).toEqual(new Error('no match found'));
+      }
+    });
+
+    it('should throw error if search is not based on status, date or time', async () => {
+      try {
+        await searchFixture({ home: 'chelsea' });
+      } catch (error) {
+        expect(error).toEqual(
+          new Error('you can only search by status, date or time'),
+        );
+      }
     });
   });
 
