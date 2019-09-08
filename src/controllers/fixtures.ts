@@ -55,15 +55,24 @@ const edit = async (fixtureId: string, payload: any) => {
 };
 
 const viewAll = async () => {
-  return FixtureModel.find({ isDeleted: false });
+  return FixtureModel.find({ isDeleted: false }).populate(
+    'home away',
+    ' -isDeleted -logo -founded -_id -coach -country -stadium -__v -stadiumCapacity',
+  );
 };
 
 const viewCompleted = async () => {
-  return FixtureModel.find({ status: 'completed' });
+  return FixtureModel.find({ status: 'completed' }).populate(
+    'home away',
+    ' -isDeleted -logo -founded -_id -coach -country -stadium -__v -stadiumCapacity',
+  );
 };
 
 const viewPending = async () => {
-  return FixtureModel.find({ status: 'pending' });
+  return FixtureModel.find({ status: 'pending' }).populate(
+    'home away',
+    ' -isDeleted -logo -founded -_id -coach -country -stadium -__v -stadiumCapacity',
+  );
 };
 
 const searchFixture = async (searchParam: any) => {
@@ -90,7 +99,10 @@ const searchFixture = async (searchParam: any) => {
 };
 
 const getLink = async (URL: string) => {
-  const fixture = await FixtureModel.findOne({ link: URL });
+  const fixture = await FixtureModel.findOne({ link: URL }).populate(
+    'home away',
+    ' -isDeleted -logo -founded -_id -coach -country -stadium -__v -stadiumCapacity',
+  );
   if (!fixture) {
     throw new Error('not found');
   }
