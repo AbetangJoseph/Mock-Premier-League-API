@@ -51,12 +51,9 @@ router.get('/pending', async (_req: express.Request, res: express.Response) => {
 });
 
 router.get('/:id', async (req: express.Request, res: express.Response) => {
-  const URL = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-
-  console.log(URL);
-
+  const shortId = req.params.id;
   try {
-    const response = await getLink(URL);
+    const response = await getLink(shortId);
     res.status(200).json({ success: true, data: response });
   } catch (error) {
     res.status(404).json({ error: error.message });
