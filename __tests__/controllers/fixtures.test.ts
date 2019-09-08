@@ -15,7 +15,7 @@ describe('TESTS FOR FIXTURES CONTROLLER', () => {
   let homeId: string;
   let awayId: string;
   let fixtureId: string;
-  let fxtureLink: string;
+  let fxtureLink: any;
 
   beforeAll(async () => {
     await DBconnect();
@@ -74,8 +74,6 @@ describe('TESTS FOR FIXTURES CONTROLLER', () => {
       await add(fixture).then(res => {
         fixtureId = res!._id;
         fxtureLink = res!.link || '';
-        console.log(fxtureLink);
-
         expect(res).toHaveProperty('link');
         expect(res).toHaveProperty('home');
         expect(res).toHaveProperty('away');
@@ -192,7 +190,7 @@ describe('TESTS FOR FIXTURES CONTROLLER', () => {
 
   describe('GetLink Fixtures Controller', () => {
     it('view a fixture with a given unique link', async () => {
-      await getLink(fxtureLink).then(res => {
+      await getLink(`${fxtureLink.split('/')[6]}`).then(res => {
         expect(res).toHaveProperty('venue');
       });
     });
