@@ -7,6 +7,7 @@ import {
   viewCompleted,
   viewPending,
   searchFixture,
+  getLink,
 } from '../controllers/fixtures';
 import { validateFixture, validateFixtureUpdate } from '../validation/fixtures';
 import auth from '../middleware/auth';
@@ -47,6 +48,19 @@ router.get(
 router.get('/pending', async (_req: express.Request, res: express.Response) => {
   const response = await viewPending();
   res.status(200).json({ success: true, data: response });
+});
+
+router.get('/:id', async (req: express.Request, res: express.Response) => {
+  const URL = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+
+  console.log(URL);
+
+  try {
+    const response = await getLink(URL);
+    res.status(200).json({ success: true, data: response });
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
 });
 
 router.use(authAdmin);

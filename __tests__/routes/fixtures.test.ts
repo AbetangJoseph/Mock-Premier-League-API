@@ -133,189 +133,201 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
           expect(res.body.error).toEqual('team cannot play against itself');
         });
     });
+  });
+  describe('Edit Fixture Route', () => {
+    it('updates/edit fixture and returns an appropraite status code and the updated document', async () => {
+      await request(app)
+        .put(`/api/v1/fixtures/${fixtureId}`)
+        .send({ venue: 'Wembly', date: '2019-05-19T00:00:00+00:00' })
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body.success).toBeTruthy();
+          expect(res.body.data).toEqual(
+            expect.objectContaining({
+              venue: 'Wembly',
+              date: '2019-05-19T00:00:00+00:00',
+            }),
+          );
+        });
+    });
 
-    describe('Edit Fixture Route', () => {
-      it('updates/edit fixture and returns an appropraite status code and the updated document', async () => {
-        await request(app)
-          .put(`/api/v1/fixtures/${fixtureId}`)
-          .send({ venue: 'Wembly', date: '2019-05-19T00:00:00+00:00' })
-          .set('Accept', 'application/json')
-          .set('authorization', `Bearer ${adminToken}`)
-          .then(res => {
-            expect(res.status).toBe(200);
-            expect(res.body.success).toBeTruthy();
-            expect(res.body.data).toEqual(
+    it('throws error with an appropraite status code if update/edit input value(s) violates validation constraints', async () => {
+      await request(app)
+        .put(`/api/v1/fixtures/${fixtureId}`)
+        .send({ venue: 33, date: '2019-05-19T00:00:00+00:00' })
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body.error).toBeTruthy();
+          expect(res.body.error).toMatch('venue must be a string');
+        });
+    });
+
+    it('throws error with an appropraite status code when trying to update/edit a deleted fixture', async () => {
+      await request(app)
+        .put('/api/v1/fixtures/5d6eb3bc764892764a0bd5ae')
+        .send({ venue: 'Wembly', date: '2019-05-19T00:00:00+00:00' })
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body.error).toBeTruthy();
+        });
+    });
+  });
+
+  describe('View Completed Fixtures Route', () => {
+    it('view completed fixtures', async () => {
+      await request(app)
+        .get('/api/v1/fixtures/complete')
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body.success).toBeTruthy();
+          expect(res.body.data).toEqual(
+            expect.arrayContaining([
               expect.objectContaining({
-                venue: 'Wembly',
-                date: '2019-05-19T00:00:00+00:00',
+                goalsHomeTeam: 0,
+                goalsAwayTeam: 0,
+                status: 'completed',
+                elapsed: 0,
+                isDeleted: false,
               }),
-            );
-          });
-      });
+            ]),
+          );
+        });
+    });
+  });
 
-      it('throws error with an appropraite status code if update/edit input value(s) violates validation constraints', async () => {
-        await request(app)
-          .put(`/api/v1/fixtures/${fixtureId}`)
-          .send({ venue: 33, date: '2019-05-19T00:00:00+00:00' })
-          .set('Accept', 'application/json')
-          .set('authorization', `Bearer ${adminToken}`)
-          .then(res => {
-            expect(res.status).toBe(400);
-            expect(res.body.error).toBeTruthy();
-            expect(res.body.error).toMatch('venue must be a string');
-          });
-      });
+  describe('View Pending Fixtures Route', () => {
+    it('view pending fixtures', async () => {
+      await request(app)
+        .get('/api/v1/fixtures/pending')
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body.success).toBeTruthy();
+          expect(res.body.data).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                goalsHomeTeam: 0,
+                goalsAwayTeam: 0,
+                status: 'pending',
+                elapsed: 0,
+                isDeleted: false,
+              }),
+            ]),
+          );
+        });
+    });
+  });
 
-      it('throws error with an appropraite status code when trying to update/edit a deleted fixture', async () => {
-        await request(app)
-          .put('/api/v1/fixtures/5d6eb3bc764892764a0bd5ae')
-          .send({ venue: 'Wembly', date: '2019-05-19T00:00:00+00:00' })
-          .set('Accept', 'application/json')
-          .set('authorization', `Bearer ${adminToken}`)
-          .then(res => {
-            expect(res.status).toBe(400);
-            expect(res.body.error).toBeTruthy();
-          });
-      });
+  describe('View All Fixtures Route', () => {
+    it('returns all fixtures', async () => {
+      await request(app)
+        .get(`/api/v1/fixtures/`)
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body.success).toBeTruthy();
+          expect(res.body.data).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                goalsHomeTeam: 0,
+                goalsAwayTeam: 0,
+                status: 'pending',
+                elapsed: 0,
+                isDeleted: false,
+              }),
+            ]),
+          );
+        });
+    });
+  });
+
+  describe('GetLink Fixtures Route', () => {
+    it('should throw error if fixture not found or invalid link', async () => {
+      await request(app)
+        .get(`/api/v1/fixtures/NthhB-N`)
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(404);
+          expect(res.body.error).toMatch('not found');
+        });
+    });
+  });
+
+  describe('Search Fixtures Route', () => {
+    it('should search for a fixture by date and return fixtures that match without having to login', async () => {
+      await request(app)
+        .get('/api/v1/fixtures/search?date=20')
+        .set('Accept', 'application/json')
+        .then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body.success).toBeTruthy();
+          expect(res.body.data[0]).toHaveProperty('link');
+          expect(res.body.data).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                isDeleted: false,
+              }),
+            ]),
+          );
+        });
     });
 
-    describe('View Completed Fixtures Route', () => {
-      it('view completed fixtures', async () => {
-        await request(app)
-          .get('/api/v1/fixtures/complete')
-          .set('Accept', 'application/json')
-          .set('authorization', `Bearer ${adminToken}`)
-          .then(res => {
-            expect(res.status).toBe(200);
-            expect(res.body.success).toBeTruthy();
-            expect(res.body.data).toEqual(
-              expect.arrayContaining([
-                expect.objectContaining({
-                  goalsHomeTeam: 0,
-                  goalsAwayTeam: 0,
-                  status: 'completed',
-                  elapsed: 0,
-                  isDeleted: false,
-                }),
-              ]),
-            );
-          });
-      });
+    it('should throw if no match found for the search', async () => {
+      await request(app)
+        .get('/api/v1/fixtures/search?time=hahah')
+        .set('Accept', 'application/json')
+        .then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body.error).toBeTruthy();
+          expect(res.body.error).toMatch('no match found');
+        });
     });
 
-    describe('View Pending Fixtures Route', () => {
-      it('view pending fixtures', async () => {
-        await request(app)
-          .get('/api/v1/fixtures/pending')
-          .set('Accept', 'application/json')
-          .set('authorization', `Bearer ${adminToken}`)
-          .then(res => {
-            expect(res.status).toBe(200);
-            expect(res.body.success).toBeTruthy();
-            expect(res.body.data).toEqual(
-              expect.arrayContaining([
-                expect.objectContaining({
-                  goalsHomeTeam: 0,
-                  goalsAwayTeam: 0,
-                  status: 'pending',
-                  elapsed: 0,
-                  isDeleted: false,
-                }),
-              ]),
-            );
-          });
-      });
+    it('should throw an error if search input violates validation constrians', async () => {
+      await request(app)
+        .get('/api/v1/fixtures/search?elapsed=hahah')
+        .set('Accept', 'application/json')
+        .then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body.error).toBeTruthy();
+          expect(res.body.error).toMatch('elapsed must be a number');
+        });
+    });
+  });
+
+  describe('Remove Fixture Route', () => {
+    it('deletes a fixture and returns an appropraite status code and deleted fixture id', async () => {
+      await request(app)
+        .delete(`/api/v1/fixtures/${fixtureId}`)
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body.success).toBeTruthy();
+          expect(res.body.data.id).toMatch(`${fixtureId}`);
+        });
     });
 
-    describe('View All Fixtures Route', () => {
-      it('returns all fixtures', async () => {
-        await request(app)
-          .get(`/api/v1/fixtures/`)
-          .set('Accept', 'application/json')
-          .set('authorization', `Bearer ${adminToken}`)
-          .then(res => {
-            expect(res.status).toBe(200);
-            expect(res.body.success).toBeTruthy();
-            expect(res.body.data).toEqual(
-              expect.arrayContaining([
-                expect.objectContaining({
-                  goalsHomeTeam: 0,
-                  goalsAwayTeam: 0,
-                  status: 'pending',
-                  elapsed: 0,
-                  isDeleted: false,
-                }),
-              ]),
-            );
-          });
-      });
-    });
-
-    describe('Search Fixtures Route', () => {
-      it('should search for a fixture by date and return fixtures that match without having to login', async () => {
-        await request(app)
-          .get('/api/v1/fixtures/search?date=20')
-          .set('Accept', 'application/json')
-          .then(res => {
-            expect(res.status).toBe(200);
-            expect(res.body.success).toBeTruthy();
-            expect(res.body.data[0]).toHaveProperty('link');
-            expect(res.body.data).toEqual(
-              expect.arrayContaining([
-                expect.objectContaining({
-                  isDeleted: false,
-                }),
-              ]),
-            );
-          });
-      });
-
-      it('should throw if no match found for the search', async () => {
-        await request(app)
-          .get('/api/v1/fixtures/search?time=hahah')
-          .set('Accept', 'application/json')
-          .then(res => {
-            expect(res.status).toBe(400);
-            expect(res.body.error).toBeTruthy();
-            expect(res.body.error).toMatch('no match found');
-          });
-      });
-
-      it('should throw an error if search input violates validation constrians', async () => {
-        await request(app)
-          .get('/api/v1/fixtures/search?elapsed=hahah')
-          .set('Accept', 'application/json')
-          .then(res => {
-            expect(res.status).toBe(400);
-            expect(res.body.error).toBeTruthy();
-            expect(res.body.error).toMatch('elapsed must be a number');
-          });
-      });
-    });
-
-    describe('Remove Fixture Route', () => {
-      it('deletes a fixture and returns an appropraite status code and deleted fixture id', async () => {
-        await request(app)
-          .delete(`/api/v1/fixtures/${fixtureId}`)
-          .set('Accept', 'application/json')
-          .set('authorization', `Bearer ${adminToken}`)
-          .then(res => {
-            expect(res.status).toBe(200);
-            expect(res.body.success).toBeTruthy();
-            expect(res.body.data.id).toMatch(`${fixtureId}`);
-          });
-      });
-
-      it('throws error with an appropraite status code when trying to delete an already deleted fixture', async () => {
-        await request(app)
-          .delete(`/api/v1/fixtures/${fixtureId}`)
-          .set('Accept', 'application/json')
-          .set('authorization', `Bearer ${adminToken}`)
-          .then(res => {
-            expect(res.status).toBe(400);
-            expect(res.body.error).toMatch('no such fixture');
-          });
-      });
+    it('throws error with an appropraite status code when trying to delete an already deleted fixture', async () => {
+      await request(app)
+        .delete(`/api/v1/fixtures/${fixtureId}`)
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body.error).toMatch('no such fixture');
+        });
     });
   });
 });
