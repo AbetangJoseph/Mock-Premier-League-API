@@ -98,8 +98,15 @@ const searchFixture = async (searchParam: any) => {
   return fixture;
 };
 
-const getLink = async (URL: string) => {
-  const fixture = await FixtureModel.findOne({ link: URL }).populate(
+const getLink = async (shortId: string) => {
+  const url =
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:3000/api/v1/fixtures'
+      : 'https://sterling-premierleague-api.herokuapp.com/api/v1/fixtures';
+
+  const fixture = await FixtureModel.findOne({
+    link: `${url}/${shortId}`,
+  }).populate(
     'home away',
     ' -isDeleted -logo -founded -_id -coach -country -stadium -__v -stadiumCapacity',
   );

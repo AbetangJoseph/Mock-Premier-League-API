@@ -10,6 +10,7 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
   let awayId: string;
   let adminToken: string;
   let fixtureId: string;
+  let fixtureLink: string;
 
   beforeAll(async () => {
     await DBconnect();
@@ -86,6 +87,7 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
         .set('authorization', `Bearer ${adminToken}`)
         .then(res => {
           fixtureId = res.body.data!._id;
+          fixtureLink = res!.body.data.link || '';
           expect(res.status).toBe(200);
           expect(res.body.success).toBeTruthy();
           expect(res.body.data).toHaveProperty('link');
@@ -252,6 +254,17 @@ describe('TESTS FOR FIXTURES ROUTE', () => {
   });
 
   describe('GetLink Fixtures Route', () => {
+    it('should return a fixture that matches the given link', async () => {
+      await request(app)
+        .get(`/api/v1/fixtures/${fixtureLink.split('/')[6]}`)
+        .set('Accept', 'application/json')
+        .set('authorization', `Bearer ${adminToken}`)
+        .then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body.data).toHaveProperty('venue');
+        });
+    });
+
     it('should throw error if fixture not found or invalid link', async () => {
       await request(app)
         .get(`/api/v1/fixtures/NthhB-N`)

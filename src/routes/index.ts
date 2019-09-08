@@ -10,8 +10,8 @@ router.get('/', (_req, res) =>
   res.json({
     status: 'Ok',
     usersOp: '/users/login, /users/signup',
-    fixtures: '/fixtures',
-    teams: '/teams, /teams:id',
+    fixtures: '/fixtures/search?time=1',
+    teams: '/teams/search?clubName=ch',
   }),
 );
 
