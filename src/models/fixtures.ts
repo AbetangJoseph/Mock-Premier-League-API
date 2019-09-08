@@ -2,13 +2,10 @@ import { prop, Typegoose, Ref } from 'typegoose';
 import { Teams } from './teams';
 import shortid from 'shortid';
 
-const productionBaseURL = 'yoursite';
-const productionPort = 'yourport';
-const productionProtocol = 'https';
 const url =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000/api/v1/fixtures'
-    : `${productionProtocol}://${productionBaseURL}:${productionPort}/api/v1/fixtures`;
+    : 'https://sterling-premierleague-api.herokuapp.com/api/v1/fixtures';
 
 enum matchStatus {
   pending = 'pending',
