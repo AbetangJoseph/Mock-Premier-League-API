@@ -89,6 +89,15 @@ const searchFixture = async (searchParam: any) => {
   return fixture;
 };
 
+const getLink = async (URL: string) => {
+  const fixture = await FixtureModel.findOne({ link: URL });
+  if (!fixture) {
+    throw new Error('not found');
+  }
+
+  return fixture;
+};
+
 export {
   add,
   remove,
@@ -97,4 +106,5 @@ export {
   viewCompleted,
   viewPending,
   searchFixture,
+  getLink,
 };
