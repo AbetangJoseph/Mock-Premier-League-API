@@ -8,4 +8,4 @@ https://sterling-premierleague-api.herokuapp.com/
 
 #### API Documentation
 
-https://documenter.getpostman.com/view/8724465/SVmpWMDs
+https://documenter.getpostman.com/view/8724465/SVmpX2Bi
