@@ -32,7 +32,11 @@ const remove = async (fixtureId: string) => {
 };
 
 const edit = async (fixtureId: string, payload: any) => {
-  let fixture = await FixtureModel.findOne({ _id: fixtureId });
+  let fixture = await FixtureModel.findOne({ _id: fixtureId }).populate(
+    'home away',
+    ' -isDeleted -logo -founded -_id -coach -country -stadium -__v -stadiumCapacity',
+  );
+
   if (!fixture || fixture.isDeleted) {
     throw new Error('no such fixture');
   }
