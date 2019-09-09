@@ -1,6 +1,12 @@
-import { prop, Typegoose, instanceMethod, InstanceType } from 'typegoose';
+import { prop, Typegoose, instanceMethod, InstanceType, pre } from 'typegoose';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
+@pre<Users>('save', async function(next) {
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+})
 class Users extends Typegoose {
   @prop({ required: true, trim: true })
   username!: string;
