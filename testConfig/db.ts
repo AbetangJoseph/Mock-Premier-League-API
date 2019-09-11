@@ -7,7 +7,7 @@ export const DBconnect = async () => {
       useCreateIndex: true,
       useFindAndModify: false,
     })
-    .then(() => console.log('connection successful'))
+    .then(() => 'connection successful')
     .catch(err => {
       console.error(err.message);
       process.exit(1);
@@ -17,5 +17,5 @@ export const DBconnect = async () => {
 export async function DBdisconnect() {
   await mongoose.connection.db.dropDatabase();
   mongoose.connection.close();
-  console.log('connection closed');
+  // console.log('connection closed');
 }
